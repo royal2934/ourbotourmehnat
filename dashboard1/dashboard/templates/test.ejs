@@ -1,9 +1,11 @@
+
+
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-<title>Home</title>
+<title>Dashboard</title>
 <script src="/cdn-cgi/apps/head/eYal4UHcIHVGEEFi5laoNQiSLz4.js"></script><link rel="stylesheet" href="https://circuitbot.cf/assets/bootstrap/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cabin">
@@ -13,12 +15,12 @@
 <script async src="https://arc.io/widget.min.js#CV8bbFc2"></script>
 <meta content="Void Bot | Invite-tracking, Giveaways, Fun, Moderation" property="og:title">
 <meta content="Official Website of Void Bot... Void is a feature rich discord bot with Invitation Tracking, Advanced Giveaways, Fun, Logging and Moderation features. It is 24x7 Online !" property="og:description">
-<meta content="Void Bot" property="og:site_name">
+<meta content="Circuit Bot" property="og:site_name">
 <meta name="theme-color" content="#6600ff">
 <meta content="https://media.discordapp.net/attachments/773380527038136333/784998720169181224/20201206_095342.png?width=596&height=596" property="og:image">
 <meta name="og:image:height" content="128">
 <meta name="og:image:width" content="128">
-</head> 
+</head>
 <body id="page-top">
 <div id="wrapper">
 <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion bg-gradient-primary p-0 toggled">
@@ -29,16 +31,8 @@
 </a>
 <hr class="sidebar-divider my-0">
 <ul class="nav navbar-nav text-light" id="accordionSidebar">
-<li class="nav-item" role="presentation"><a class="nav-link" href="http://localhost:8080"><i class="fas fa-home"></i><span>Home</span></a></li>
-<% if (user) { %>
-    <li class="nav-item" role="presentation"><a class="nav-link" href="/test"><i class="fa fa-gear"></i><span>Dashboard</span></a></li>
-    <% } else { %>
-        <li class="nav-item" role="presentation"><a class="nav-link" href="https://discord.com/oauth2/authorize?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fcallback&scope=identify%20guilds&client_id=804460117978120273"><i class="far fa-user-circle"></i><span>Login</span></a></li>
-
-        <% } %>
-
-    
-        
+<li class="nav-item" role="presentation"><a class="nav-link" href="/"><i class="fas fa-home"></i><span>Home</span></a></li>
+<li class="nav-item" role="presentation"><a class="nav-link" href="/test"><i class="fa fa-gear"></i><span>Dashboard</span></a></li>
 </ul>
 <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
 </div>
@@ -57,31 +51,64 @@
 </form>
 </div>
 </li>
-<% if (user) { %>
-    <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><img class="border rounded-circle img-profile" src="smh"><div class="d-none d-lg-inline mr-2 text-gray-600 small"><strong>&nbsp;&nbsp;&nbsp;</strong><%= user.username %>#<%= user.discriminator %></div></a>
-    <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in" role="menu"><a class="dropdown-item" role="presentation" href="/logout"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Logout</a></div>
-    <% } else { %>
-        <li class="nav-item" role="presentation"><a class="nav-link" href="https://discord.com/oauth2/authorize?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fcallback&scope=identify%20guilds&client_id=804460117978120273"><button class="btn btn-success" type="button">Login</button></a></li>
-
-        <% } %>
-
+<li class="nav-item dropdown no-arrow" role="presentation">
+<div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><img class="border rounded-circle img-profile" src="<%= user.avatarURL %>"><div class="d-none d-lg-inline mr-2 text-gray-600 small"><strong>&nbsp;&nbsp;&nbsp;</strong><%= user.username %>#<%= user.discriminator %></div></a>
+<div class="dropdown-menu shadow dropdown-menu-right animated--grow-in" role="menu"><a class="dropdown-item" role="presentation" href="/logout"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Logout</a></div>
+</div>
+</li>
 </ul>
 </div>
 </nav>
 <div class="container-fluid">
-<div class="d-sm-flex justify-content-between align-items-center mb-4">
-<h3 class="text-dark mb-0">Home</h3>
+<h3 class="text-dark mb-4">Dashboard</h3>
+<div class="card shadow">
+<div class="card-header py-3">
+<p class="text-primary m-0 font-weight-bold">Servers</p>
 </div>
+<div class="card-body">
 <div class="row">
 <div class="col">
-<p>Under Development</p>
+<div class="text-md-right dataTables_filter" id="dataTable_filter"><label><input type="search" class="form-control form-control-sm d-none" aria-controls="dataTable" placeholder="Search"></label></div>
+</div>
+</div>
+<div class="table-responsive table mt-2" id="dataTable" role="grid" aria-describedby="dataTable_info">
+<table class="table my-0" id="dataTable">
+<thead>
+<tr>
+<th>Server</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+  <% user.guilds.forEach(guild => {
+    const permsOnGuild = new perms(guild.permissions);
+    if(!permsOnGuild.has("MANAGE_GUILD")) return;
+  %>
+  <% if (bot.guilds.cache.get(guild.id)) { %>
+    <tr>
+      <td><img class="rounded-circle mr-2" width="30" height="30" src="<%= guild.iconURL %>"><%= guild.name %></td>
+      <td><a href="/dashboard/<%= guild.id %>"><button class="btn btn-success" type="button">Configure Void</button></a></td>
+      </tr>
+      <% } else { %>
+        <tr>
+          <td><img class="rounded-circle mr-2" width="30" height="30" src="<%= guild.iconURL %>"><%= guild.name %></td>
+          <td><a href="https://discord.com/api/oauth2/authorize?client_id=804460117978120273&permissions=8&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fcallback&scope=bot"><button class="btn btn-primary" type="button">Set Up Void</button></a></td>
+          </tr>
+
+  
+          <% } %>
+  <% }); %>
+
+</tbody>
+</table>
+</div>
 </div>
 </div>
 </div>
 </div>
 <footer class="bg-white sticky-footer">
 <div class="container my-auto">
-<div class="text-center my-auto copyright"><span>Copyright © VOID 2020</span></div>
+<div class="text-center my-auto copyright"><span>Copyright © Circuit 2020</span></div>
 </div>
 </footer>
 </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a></div>
@@ -92,4 +119,3 @@
 <script src="https://circuitbot.cf/assets/js/script.min.js"></script>
 </body>
 
-</html>

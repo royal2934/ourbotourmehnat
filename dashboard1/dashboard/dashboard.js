@@ -99,7 +99,7 @@ module.exports = async (client) => {
         req.session.backURL = parsed.path;
       }
     } else {
-      req.session.backURL = "/";
+      req.session.backURL = "/test";
     }
     // Forward the request to the passport middleware.
     next();
@@ -127,6 +127,10 @@ module.exports = async (client) => {
       // We redirect user to index.
       res.redirect("/");
     });
+  });
+
+  app.get("/test", (req, res) => {
+    renderTemplate(res, req, "test.ejs", { perms: Discord.Permissions });
   });
 
   // Index endpoint.
