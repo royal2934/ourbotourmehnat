@@ -11,5 +11,6 @@
   <% } else { %>
     <a href="<%= `https://discordapp.com/oauth2/authorize?client_id=${bot.user.id}&scope=bot&guild_id=${guild.id}&response_type=code&redirect_uri=${encodeURIComponent(`${bot.config.domain}${bot.config.port == 80 ? "" : `:${bot.config.port}`}/callback`)}` %>">Add Bot</a>
   <% } %>
-  <% }); %>
-<%- include("partials/footer") %>
+  <% }); %> 
+
+<%- include("partials/footer") %> 
